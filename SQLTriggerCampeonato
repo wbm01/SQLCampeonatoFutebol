@@ -1,0 +1,90 @@
+CREATE OR ALTER TRIGGER TGR_InserirTimeCampeonato ON Clube AFTER INSERT
+AS
+BEGIN
+
+        DECLARE @time VARCHAR(50), @pontos INT, @numeroJogos INT, @derrotas INT,
+        @vitorias INT, @empates INT, @golMarcado INT, @golSofrido INT
+
+        SELECT @time = Nome FROM inserted
+
+        INSERT INTO Campeonato ([Time], Pontos, NumeroJogos, Derrotas, Vitorias, Empates, GolMarcado, GolSofrido)
+        VALUES(@time, 0, 0, 0, 0, 0, 0, 0)
+    END;
+GO
+
+CREATE OR ALTER TRIGGER TGR_InserirResultadoConfronto ON Partida AFTER INSERT
+AS
+BEGIN
+
+    DECLARE @timea VARCHAR(50), @timeb VARCHAR(50), @classificacao INT, @pontos INT, @numeroJogos INT, @derrotas INT,
+        @vitorias INT, @empates INT, @resultado VARCHAR(50), @golCasa INT, @golVisitante INT,
+        @timeCamp VARCHAR(50), @pontosCamp INT, @numeroJogosCamp INT, @derrotasCamp INT,
+        @vitoriasCamp INT, @empatesCamp INT, @golMarcado INT, @golSofrido INT, @diferencagol INT,
+        @golCasaCamp INT, @golSofridoCamp INT
+
+    SELECT @timea = TimeA, @timeb = TimeB, @numeroJogos = NumeroPartida, @pontos = Pontos, @resultado = Resultado,
+    @golCasa = GolCasa, @golVisitante = GolVisitante FROM inserted
+
+    IF(@pontos = 5)
+    BEGIN
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timeb
+
+    UPDATE Campeonato SET Pontos = @pontos + @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp, Vitorias = @vitoriasCamp + 1, Empates = @empatesCamp, 
+    GolMarcado = @golCasaCamp + @golVisitante, GolSofrido = @golSofridoCamp + @golCasa WHERE [Time] = @timeb
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timea
+
+    UPDATE Campeonato SET Pontos = @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp + 1, Vitorias = @vitoriasCamp, Empates = @empatesCamp,
+    GolMarcado = @golCasaCamp + @golCasa, GolSofrido = @golSofridoCamp + @golVisitante WHERE [Time] = @timea
+
+    END
+
+    IF(@pontos = 1)
+    BEGIN
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timea
+
+    UPDATE Campeonato SET Pontos = @pontos + @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp, Vitorias = @vitoriasCamp, Empates = @empatesCamp + 1,
+    GolMarcado = @golCasaCamp + @golCasa, GolSofrido = @golSofridoCamp + @golVisitante WHERE [Time] = @timea
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timeb
+
+    UPDATE Campeonato SET Pontos = @pontos + @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp, Vitorias = @vitoriasCamp, Empates = @empatesCamp + 1,
+    GolMarcado = @golCasaCamp + @golCasa, GolSofrido = @golSofridoCamp + @golCasa WHERE [Time] = @timeb
+
+    END
+
+    IF(@pontos = 3)
+    BEGIN
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timea
+
+    UPDATE Campeonato SET Pontos = @pontos + @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp, Vitorias = @vitoriasCamp + 1, Empates = @empatesCamp,
+    GolMarcado = @golCasaCamp + @golCasa, GolSofrido = @golSofridoCamp + @golVisitante WHERE [Time] = @timea
+
+    SELECT @timeCamp = [Time], @pontosCamp = Pontos, @numeroJogosCamp = NumeroJogos, @derrotasCamp = Derrotas,
+    @vitoriasCamp = Vitorias, @empatesCamp = Empates, @golCasaCamp = GolMarcado, 
+    @golSofridoCamp = GolSofrido FROM Campeonato WHERE [Time] = @timeb
+
+    UPDATE Campeonato SET Pontos = @pontosCamp, NumeroJogos = @numeroJogosCamp+1, 
+    Derrotas = @derrotasCamp + 1, Vitorias = @vitoriasCamp, Empates = @empatesCamp,
+    GolMarcado = @golCasaCamp + @golVisitante, GolSofrido = @golSofridoCamp + @golCasa WHERE [Time] = @timeb
+
+    END
+END;
