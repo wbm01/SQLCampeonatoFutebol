@@ -1,0 +1,92 @@
+CREATE DATABASE Campeonato
+
+CREATE TABLE Clube(
+    Nome VARCHAR(50) NOT NULL,
+    Apelido VARCHAR(50) NOT NULL,
+    DataCriacao DATE,
+
+    CONSTRAINT PK_Time PRIMARY KEY (Nome)
+);
+
+CREATE TABLE Campeonato(
+    [Time]VARCHAR(50) NOT NULL,
+    Pontos INT,
+    NumeroJogos INT,
+    Derrotas INT,
+    Vitorias INT,
+    Empates INT,
+    GolMarcado INT,
+    GolSofrido INT,
+
+    CONSTRAINT PK_CampeonatoTime PRIMARY KEY ([Time]),
+    CONSTRAINT FK_CampeonatoTime FOREIGN KEY ([Time]) REFERENCES Clube(Nome)
+);
+
+CREATE TABLE Partida(
+    TimeA VARCHAR(50) NOT NULL,
+    TimeB VARCHAR(50) NOT NULL,
+    NumeroPartida INT NOT NULL,
+    Pontos INT NOT NULL,
+    Resultado VARCHAR(50) NOT NULL,
+    GolCasa INT NOT NULL,
+    GolVisitante INT NOT NULL,
+
+    CONSTRAINT PK_Partida PRIMARY KEY (NumeroPartida),
+    CONSTRAINT FK_TimeA FOREIGN KEY (TimeA) REFERENCES Clube(Nome),
+    CONSTRAINT FK_TimeB FOREIGN KEY (TimeB) REFERENCES Clube(Nome)
+);
+
+INSERT INTO Clube VALUES ('Palmeiras', 'Verdão', '1910-08-26')
+
+SELECT*FROM Clube
+
+SELECT*FROM Partida
+
+DELETE Clube WHERE Nome = 'Palmeiras'
+
+SELECT*FROM Campeonato
+
+DELETE FROM Campeonato WHERE [Time] = 'Palmeiras'
+
+DROP TABLE Clube
+
+DROP TABLE Partida
+
+DROP TABLE Campeonato
+
+EXEC.CadastrarTime 'Ferroviária', 'Ferrinha', '1940-03-18'
+EXEC.CadastrarTime 'Palmeiras', 'Verdão', '1910-08-26'
+EXEC.CadastrarTime 'São Paulo', 'Tricolor', '1915-05-01'
+EXEC.CadastrarTime 'Santos', 'Peixe', '1912-07-15'
+EXEC.CadastrarTime 'Corinthians', 'Timão', '1910-09-14'
+
+EXEC.CadastrarPartida 'Palmeiras', 'Ferroviária', 1, 3, 3, 1
+EXEC.CadastrarPartida 'Palmeiras', 'Santos', 2, 3, 4, 0
+EXEC.CadastrarPartida 'Palmeiras', 'São Paulo', 3, 3, 3, 2
+EXEC.CadastrarPartida 'Palmeiras', 'Corinthians', 4, 1, 1, 1
+EXEC.CadastrarPartida 'Ferroviária', 'Palmeiras', 5, 5, 0, 1
+EXEC.CadastrarPartida 'Ferroviária', 'Santos', 6, 3, 2, 1
+EXEC.CadastrarPartida 'Ferroviária', 'São Paulo', 7, 5, 0, 1
+EXEC.CadastrarPartida 'Ferroviária', 'Corinthians', 8, 5, 0, 1
+EXEC.CadastrarPartida 'Santos', 'Palmeiras', 9, 5, 2, 4
+EXEC.CadastrarPartida 'Santos', 'Ferroviária', 10, 3, 1, 0
+EXEC.CadastrarPartida 'Santos', 'São Paulo', 11, 5, 2, 3
+EXEC.CadastrarPartida 'Santos', 'Corinthians', 12, 5, 3, 4
+EXEC.CadastrarPartida 'São Paulo', 'Palmeiras', 13, 5, 0, 1
+EXEC.CadastrarPartida 'São Paulo', 'Ferroviária', 14, 5, 0, 1
+EXEC.CadastrarPartida 'São Paulo', 'Santos', 15, 1, 1, 1
+EXEC.CadastrarPartida 'São Paulo', 'Corinthians', 16, 5, 1, 2
+EXEC.CadastrarPartida 'Corinthians', 'Palmeiras', 17, 1, 1, 1
+EXEC.CadastrarPartida 'Corinthians', 'Ferroviária', 18, 3, 2, 1
+EXEC.CadastrarPartida 'Corinthians', 'Santos', 19, 3, 1, 0
+EXEC.CadastrarPartida 'Corinthians', 'São Paulo', 20, 3, 2, 1
+
+EXEC.MostrarCampeao
+
+EXEC.JogoComMaisGols
+
+EXEC.TimeComMaisGols
+
+EXEC.TimecomMenosGols
+
+EXEC.TimeComMaiorNumeroDeGols Ferroviária -- Mostra o maior número de gols de um time em uma partida
