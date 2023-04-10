@@ -1,0 +1,128 @@
+CREATE OR ALTER PROCEDURE CadastrarTime
+    @nome VARCHAR(50),
+    @apelido VARCHAR(50),
+    @data Date
+AS
+BEGIN
+    --DECLARE @nome VARCHAR(50), @apelido VARCHAR(50), @data Date
+    INSERT INTO Clube
+        (Nome, Apelido, DataCriacao)
+    VALUES(@nome, @apelido, @data);
+END;
+GO
+
+CREATE OR ALTER PROCEDURE CadastrarPartida
+    @timeA VARCHAR(50),
+    @timeB VARCHAR(50),
+    @numeroPartida INT,
+    @pontos INT,
+    @golCasa INT,
+    @golVisitante INT
+AS
+BEGIN
+
+    IF(@pontos = 5)
+    BEGIN
+
+        INSERT INTO Partida
+            (TimeA, TimeB, NumeroPartida, Pontos, Resultado, GolCasa, GolVisitante)
+        VALUES(@timeA, @timeB, @numeroPartida, @pontos, 'Vitória TimeB', @golCasa, @golVisitante)
+
+    END
+
+    IF(@pontos = 3)
+    BEGIN
+
+        INSERT INTO Partida
+            (TimeA, TimeB, NumeroPartida, Pontos, Resultado, GolCasa, GolVisitante)
+        VALUES(@timeA, @timeB, @numeroPartida, @pontos, 'Vitória TimeA', @golCasa, @golVisitante)
+
+    END
+
+    IF(@pontos = 1)
+    BEGIN
+
+        INSERT INTO Partida
+            (TimeA, TimeB, NumeroPartida, Pontos, Resultado, GolCasa, GolVisitante)
+        VALUES(@timeA, @timeB, @numeroPartida, @pontos, 'Empate', @golCasa, @golVisitante)
+
+    END
+END;
+GO
+
+
+
+DELETE FROM Partida WHERE TimeB = 'Palmeiras'
+
+
+CREATE OR ALTER PROCEDURE MostrarCampeao
+-- Nessa tabela é possível verificar o campeão e a classificação geral
+AS
+BEGIN
+    SELECT*
+    FROM Campeonato
+    ORDER BY Pontos DESC, Vitorias DESC, GolMarcado - GolSofrido DESC   
+
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE JogoComMaisGols
+AS
+BEGIN
+    SELECT*
+    FROM Partida
+    ORDER BY GolCasa + GolVisitante DESC
+
+END;
+GO
+
+CREATE OR ALTER PROCEDURE TimeComMaiorNumeroDeGols
+    @time VARCHAR(50)
+AS
+BEGIN
+    WITH
+        MAX_Time
+        AS
+        (
+                            SELECT MAX(GolCasa) AS Total
+                FROM Partida
+                WHERE TimeA = @time
+            UNION
+                SELECT MAX(GolVisitante)
+                FROM Partida
+                WHERE TimeB = @time
+        )
+    SELECT MAX(Total)AS Maximo_Gols
+    FROM MAX_Time
+END;
+GO
+
+/*SELECT TOP(1)*
+FROM Partida
+WHERE TimeA = 'Ferroviária' 
+OR
+TimeB = 'Ferroviária'
+ORDER BY GolCasa DESC,
+GolVisitante
+DESC*/
+
+CREATE OR ALTER PROCEDURE TimeComMaisGols
+AS
+BEGIN
+    SELECT*
+    FROM Campeonato
+    ORDER BY GolMarcado DESC
+
+END;
+GO
+
+CREATE OR ALTER PROCEDURE TimeComMenosGols
+AS
+BEGIN
+    SELECT*
+    FROM Campeonato
+    ORDER BY GolSofrido DESC
+
+END;
+GO
